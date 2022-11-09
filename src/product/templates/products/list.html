@@ -19,6 +19,9 @@
       <div class="col-md-2">
         <select name="variant" id="" class="form-control">
           <option selected disabled>--Select A Variant--</option>
+          {% for variant in variants %}
+              <option value="{{variant.variant_title}}" >{{ variant.variant_title }}</option>
+          {% endfor %}
         </select>
       </div>
 
@@ -71,21 +74,21 @@
             <th width="150px">Action</th>
           </tr>
         </thead>
-        {% for product in products %}
+        {% for product in structed_data.object_list %}
         <tbody>
           <tr>
             <td>{{ product.id }}</td>
             <td>
               {{ product.title }}
               <br />
-              Created at : {{ product.created_at }}
+              Created at : {{ product.created_at |timesince }} ago
             </td>
             <td>{{ product.description }}</td>
             <td>
               <dl
                 class="row mb-0"
                 style="height: 80px; overflow: hidden"
-                id="variant"
+                id="variant_{{product.id}}"
               >
               {% for i in product.productvariantprice_set.all %}
                 <dt class="col-sm-3 pb-0">{{i.product_variant_one.variant_title}} / {{i.product_variant_two.variant_title}} / {{i.product_variant_three.variant_title}}</dt>
@@ -98,7 +101,7 @@
                 {% endfor %}
               </dl>
               <button
-                onclick="$('#variant').toggleClass('h-auto')"
+                onclick="$('#variant_{{product.id}}').toggleClass('h-auto')"
                 class="btn btn-sm btn-link"
               >
                 Show more
@@ -120,11 +123,34 @@
     <div class="row justify-content-between">
       <div class="col-md-6">
         <p>
-          Showing {{ pro_first_id }} to {{ pro_last_id }} out of
-          {{product_count}}
+          Showing {{structed_data.object_list.0.id}} to {{ structed_data.object_list.1.id }} out of
+          {{number}}
         </p>
       </div>
-      <div class="col-md-2"></div>
+      <div class="col-md-2">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              {% if structed_data.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ structed_data.previous_page_number }}" aria-label="Previous">
+                  <span aria-hidden="true">&lt;</span>
+                </a>
+              </li>
+              <li class="page-item"><a class="page-link" href="?page={{ structed_data.previous_page_number }}">{{structed_data.previous_page_number}}</a></li>
+              {% endif %}
+              
+              <li class="page-item active"><a class="page-link" href="?page={{ structed_data.number }}">{{structed_data.number}}</a></li>
+              {% if structed_data.has_next %}
+              <li class="page-item"><a class="page-link" href="?page={{ structed_data.next_page_number }}">{{structed_data.next_page_number}}</a></li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ structed_data.next_page_number }}" aria-label="Next">
+                  <span aria-hidden="true">&gt;</span>
+                </a>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
+      </div>
     </div>
   </div>
 </div>
